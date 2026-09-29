@@ -1,0 +1,17 @@
+name: free-energy-mbar-zwanzig
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - numpy
+  - scipy
+  - pandas
+  - matplotlib
+  - jupyter
+  - ipykernel
+  - nbformat
+  - nbconvert
+  - pytest
+  - pip
+  - pip:
+      - pymbar>=4.0
