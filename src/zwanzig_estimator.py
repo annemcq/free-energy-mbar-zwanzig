@@ -1,18 +1,14 @@
 """
-Single-step free energy perturbation or Zwanzig is utilised here as
-a less costly comparison against MBAR on the same umbrella-sampling
-data (Part 2 of the project).
+Zwanzig free-energy perturbation estimators used for comparison with MBAR.
 
-Zwanzig's equation for the free energy difference between two states
-0 -> 1, estimated from samples drawn from state 0:
+For samples drawn from state 0, the reduced free-energy difference to
+state 1 is estimated as
 
     Delta_f = -log < exp(-(u_1 - u_0)) >_0
 
-where the average is over samples n drawn from state 0, and u_0, u_1
-are reduced potential energies (already divided by kT). This is
-numerically unstable when the two states barely overlap -- that
-instability, and where it shows up, is exactly what the notebook
-compares against MBAR's more robust multi-state estimate.
+where u_0 and u_1 are reduced potential energies. The estimator is most
+reliable when the sampled configurations have sufficient overlap between
+the two states.
 """
 
 from __future__ import annotations
@@ -49,14 +45,24 @@ def zwanzig_free_energy_difference(u0_n: np.ndarray, u1_n: np.ndarray) -> float:
 def zwanzig_pairwise_chain(u_kn: np.ndarray, N_k: np.ndarray) -> np.ndarray:
     """
     Apply Zwanzig sequentially along a chain of adjacent states
-    0 -> 1 -> 2 -> ... -> K-1, each leg estimated only from the samples
-    drawn from the earlier state of the pair. Returns cumulative
-    Delta_f relative to state 0, shape (K,).
+    0 -> 1 -> 2 -> ... -> K-1.
 
-    This mirrors how a rescoring pipeline that only has 'forward'
-    samples (e.g. WT-only trajectories reweighted onto mutants) would
-    have to chain estimates, and is deliberately less data-efficient
-    than MBAR, which pools all states at once.
+    Each pairwise estimate uses only samples drawn from the earlier state.
+    The returned values are cumulative free-energy differences relative
+    to state 0.
+
+    Parameters
+    ----------
+    u_kn : np.ndarray, shape (K, N)
+        Reduced potential energies for all samples evaluated in each state.
+        Samples are stored contiguously by originating state.
+    N_k : np.ndarray, shape (K,)
+        Number of samples drawn from each state.
+
+    Returns
+    -------
+    np.ndarray, shape (K,)
+        Cumulative Delta_f values relative to state 0.
     """
     K = len(N_k)
     f_rel = np.zeros(K)
@@ -65,6 +71,8 @@ def zwanzig_pairwise_chain(u_kn: np.ndarray, N_k: np.ndarray) -> np.ndarray:
         n_k = int(N_k[k])
         u_k_in_k = u_kn[k, offset:offset + n_k]
         u_kp1_in_k = u_kn[k + 1, offset:offset + n_k]
-        f_rel[k + 1] = f_rel[k] + zwanzig_free_energy_difference(u_k_in_k, u_kp1_in_k)
+        f_rel[k + 1] = f_rel[k] + zwanzig_free_energy_difference(
+            u_k_in_k, u_kp1_in_k
+        )
         offset += n_k
     return f_rel

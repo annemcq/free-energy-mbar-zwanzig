@@ -1,29 +1,13 @@
 """
-Loader for the umbrella-sampling dataset bundled in `data/`.
+Utilities for loading the T4 lysozyme umbrella-sampling dataset and
+constructing reduced potentials.
 
-The chosen dataset is distributed with pymbar's own examples
-(choderalab/pymbar-examples, umbrella-sampling-pmf/): umbrella
-sampling simulation of the chi torsion of a valine sidechain in T4
-lysozyme L99A with benzene bound in the cavity (Mobley et al., J. Mol.
-Biol. 2007). Note that it is not the original alanine dipeptide system.
-The latter was discarded as pymbar's own repository does not actually
-ship umbrella-sampling data for alanine dipeptide (its alanine dipeptide
-example uses parallel tempering instead). This lysozyme dataset is the
-real umbrella-sampling system pymbar ships, which is what is subsequently
-used in Part 2; the methodology (MBAR, Zwanzig, bootstrap) is identical
-regardless of which system it's applied to.
+The dataset contains umbrella simulations of the chi torsion of a valine
+sidechain in T4 lysozyme L99A with benzene bound in the cavity. It is
+distributed with the pymbar umbrella-sampling examples and is based on
+Mobley et al., J. Mol. Biol. 371(4):1118-1134 (2007).
 
-Format, per the original `centers.dat` / `prod{k}_dihed.xvg` layout:
-
-    data/centers.dat
-        one line per umbrella window k: "<center_deg> <spring_const>"
-        (spring constant in kJ/mol/rad^2; a 3rd column, if present, is
-        a per-window temperature -- unused here since all windows in
-        this dataset share one temperature)
-
-    data/prod{k}_dihed.xvg
-        Gromacs xvg time series for window k; comment lines start with
-        '#' or '@'. Data lines are "<time> <chi_degrees>".
+Input files follow the original centers.dat / prod{k}_dihed.xvg layout.
 """
 
 from __future__ import annotations
@@ -35,18 +19,24 @@ import numpy as np
 
 def load_umbrella_dataset(data_dir: str | Path) -> dict:
     """
+    Load umbrella centers, spring constants, and torsion-angle trajectories.
+
     Parameters
     ----------
-    data_dir : path to the folder containing centers.dat and prod{k}_dihed.xvg
+    data_dir : str or Path
+        Folder containing centers.dat and prod{k}_dihed.xvg files.
 
     Returns
     -------
-    dict with:
-        'K'        : int, number of umbrella windows
-        'chi0_k'   : (K,) spring center for each window, degrees
-        'Kspring_k': (K,) spring constant for each window, kJ/mol/rad^2
-        'chi_kn'   : list of length K, each a 1D array of chi values (degrees)
-                     for that window (ragged -- windows have different N_k)
+    dict
+        K : int
+            Number of umbrella windows.
+        chi0_k : np.ndarray, shape (K,)
+            Umbrella centers in degrees.
+        Kspring_k : np.ndarray, shape (K,)
+            Spring constants in kJ/mol/rad^2.
+        chi_kn : list of np.ndarray
+            Torsion-angle samples for each window, in degrees.
     """
     data_dir = Path(data_dir)
     centers = np.loadtxt(data_dir / "centers.dat")
@@ -92,20 +82,12 @@ def build_reduced_potentials(
     temperature: float = 300.0,
 ):
     """
-    Build the (K, K, N_max) reduced-potential-energy tensor u_kln for a set
-    of harmonic umbrella windows on a periodic angular coordinate.
+    Build the reduced-potential tensor for the umbrella windows.
 
-    The umbrella spring constants are given in kJ/mol/rad^2. They are
-    converted to reduced units using beta = 1 / (kB * T), with a default
-    temperature of 300 K matching the original pymbar umbrella-sampling
-    example.
-
-    u_kln[k, l, n] =
-        beta * (Kspring_l / 2) * dchi(chi_kn[k][n], chi0_l)^2
-
-    The underlying unbiased potential is identical for all umbrella
-    windows, so only the harmonic bias is needed when constructing the
-    reduced potentials used for the free-energy comparison.
+    The spring constants are given in kJ/mol/rad^2 and converted to
+    reduced units with beta = 1 / (kB * T). The underlying unbiased
+    potential is common to all windows, so only the harmonic bias is
+    required for the free-energy comparison.
 
     Parameters
     ----------
