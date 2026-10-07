@@ -1,10 +1,8 @@
 """
 Regression test for the Zwanzig estimator: for two adjacent, well-overlapping
 harmonic oscillators, single-step Zwanzig should agree with the analytical
-free energy difference (and with MBAR) to a reasonable tolerance -- this is
-the regime where Zwanzig is expected to work well, in contrast to the
-poorly-overlapping, far-apart states used to illustrate its failure mode in
-notebook 02.
+free energy difference to a reasonable tolerance. This checks the estimator
+in a regime where free-energy perturbation is expected to work well.
 """
 
 import numpy as np

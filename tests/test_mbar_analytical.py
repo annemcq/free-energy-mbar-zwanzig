@@ -3,7 +3,7 @@ Validation test: MBAREstimator vs. the known analytical free energies
 of a set of harmonic oscillators (pymbar.testsystems).
 
 This is Part 1 of the project -- before trusting MBAR on real
-umbrella-sampling data (Part 2, alanine dipeptide), confirm the
+umbrella-sampling data (Part 2, T4 lysozyme), confirm the
 wrapper reproduces free energies we can compute in closed form.
 """
 
