@@ -46,3 +46,17 @@ def test_mbar_zero_self_difference(harmonic_case):
     estimator = MBAREstimator.from_u_kln(u_kln, N_k)
     result = estimator.free_energy_differences()
     np.testing.assert_allclose(np.diag(result["Delta_f"]), 0.0, atol=1e-10)
+
+
+def test_mbar_overlap_matrix_is_valid(harmonic_case):
+    """MBAR should expose a finite, symmetric state-overlap matrix."""
+    N_k = np.array([200, 200, 200, 200, 200])
+    x_kn, u_kln, s_n = harmonic_case.sample(N_k=N_k, mode="u_kln")
+
+    estimator = MBAREstimator.from_u_kln(u_kln, N_k)
+    overlap = estimator.overlap_matrix()
+
+    assert overlap.shape == (len(N_k), len(N_k))
+    assert np.all(np.isfinite(overlap))
+    np.testing.assert_allclose(overlap, overlap.T, atol=1e-10)
+    assert np.all(np.diag(overlap) > 0)
