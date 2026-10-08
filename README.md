@@ -58,6 +58,8 @@ The overlap analysis shows heterogeneous sampling connectivity: adjacent-window 
 
 The real-data example uses the chi torsion of a valine sidechain in T4 lysozyme L99A with benzene bound in the cavity (Mobley et al., *J. Mol. Biol.* 371(4):1118-1134, 2007). The data come from the umbrella-sampling example distributed with `pymbar`.
 
+**Temperature and energy units:** Reduced umbrella-bias potentials are evaluated at **T = 300 K**, the default passed to `build_reduced_potentials` in `src/umbrella_data.py`. With spring constants in kJ/mol/rad², the conversion is $u = \beta U_{\mathrm{bias}}$ with $\beta = 1/(k_B T)$ and $k_B = 0.008314462618\ \mathrm{kJ\,mol^{-1}\,K^{-1}}$. The reported free-energy differences are dimensionless (in units of $k_B T$); 300 K is the analysis setting, not an independently verified simulation temperature. `tests/test_umbrella_temperature.py` checks the expected inverse-temperature scaling and absolute energy conversion.
+
 `notebooks/02_lysozyme_pmf.ipynb`:
 
 1. Loads the 26-window umbrella-sampling dataset (`src/umbrella_data.py`)
