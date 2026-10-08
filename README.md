@@ -45,6 +45,14 @@ jupyter nbconvert --to notebook --execute --inplace notebooks/*.ipynb
 
 *MBAR's estimate (with standard error) tracks the analytical solution for every state.*
 
+## Sampling overlap and estimator reliability
+
+Before comparing free-energy estimates, the analysis now checks the statistical overlap between the umbrella windows using MBAR's state-overlap matrix. This provides a direct diagnostic of whether neighboring windows form a sufficiently connected sampling network.
+
+![MBAR state-overlap matrix](results/figures/mbar_state_overlap.png)
+
+The overlap analysis also provides context for the chained Zwanzig calculation: weak overlap between adjacent windows is a regime where single-step perturbation estimates become more sensitive to sampling noise, and uncertainty can accumulate along the chain.
+
 ## Part 2 — Real umbrella-sampling PMF: MBAR vs. Zwanzig
 
 The real-data example uses the chi torsion of a valine sidechain in T4 lysozyme L99A with benzene bound in the cavity (Mobley et al., *J. Mol. Biol.* 371(4):1118-1134, 2007). The data come from the umbrella-sampling example distributed with `pymbar`.
