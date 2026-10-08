@@ -9,6 +9,7 @@ This project compares single-step Zwanzig free-energy perturbation with Multista
 ```text
 free-energy-mbar-zwanzig/
 ├── README.md
+├── LICENSE
 ├── environment.yml
 ├── pytest.ini
 ├── data/
