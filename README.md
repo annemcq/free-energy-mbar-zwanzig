@@ -80,12 +80,10 @@ The PMF is reported as a free-energy profile over **36 bins of the chi torsion**
 
 ### Quantitative comparison
 
-The two estimators recover broadly similar free-energy profiles, but their uncertainty behaves very differently. MBAR's analytical standard errors agree closely with an independent bootstrap check (median bootstrap/analytical SE ratio = **1.017**, range **0.87–1.07**). Across the reaction coordinate, the chained Zwanzig profile differs from MBAR by an RMSE of **1.477 kBT**, with a maximum absolute difference of **2.973 kBT**. The median Zwanzig bootstrap standard error is **1.549 kBT**, compared with **0.366 kBT** for MBAR — approximately **4.23× larger** for the chained estimator.
+The two estimators recover broadly similar free-energy profiles, but their uncertainty behaves very differently. MBAR's analytical standard errors agree closely with an independent bootstrap check (median bootstrap/analytical SE ratio = **1.017**, range **0.87–1.07**). Across the 26 umbrella windows, the chained Zwanzig profile differs from MBAR by an RMSE of **1.477 kBT**, with a maximum absolute difference of **2.973 kBT**. The median Zwanzig bootstrap standard error is **1.549 kBT**, compared with **0.366 kBT** for MBAR — approximately **4.23× larger** for the chained estimator.
 
 This comparison illustrates the practical trade-off between the two approaches: Zwanzig can reproduce the overall profile but accumulates uncertainty as successive perturbation steps are chained, whereas MBAR uses information from all sampled states simultaneously.
 
-
-*MBAR and the chained Zwanzig estimates agree closely over much of the umbrella-sampling range, particularly near the reference window. The bootstrap uncertainty of the Zwanzig chain increases as pairwise steps are accumulated, and differences of a few $k_BT$ appear for some later windows. MBAR retains smaller uncertainties by combining information from all sampled states in a single multistate estimate.*
 
 ## Notes
 
