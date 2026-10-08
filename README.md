@@ -87,5 +87,4 @@ This comparison illustrates the practical trade-off between the two approaches: 
 
 ## Notes
 
-- Built with AI assistance.
 - Uses only public data and public benchmark systems — no unpublished research data.
