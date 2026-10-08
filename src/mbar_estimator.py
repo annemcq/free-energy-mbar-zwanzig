@@ -70,6 +70,19 @@ class MBAREstimator:
         result = self.free_energy_differences()
         return result["Delta_f"][0, :], result["dDelta_f"][0, :]
 
+    def overlap_matrix(self) -> np.ndarray:
+        """
+        Return MBAR's estimated state-overlap matrix.
+
+        The matrix quantifies how much information sampled from each
+        thermodynamic state contributes to the neighboring states. Strong
+        overlap between adjacent umbrella windows is important for reliable
+        free-energy estimation, while weak overlap indicates that a
+        single-step perturbation estimate such as Zwanzig may become noisy.
+        """
+        result = self._mbar.compute_overlap()
+        return np.asarray(result["matrix"])
+
     def compute_pmf(
         self,
         u_n: np.ndarray,
