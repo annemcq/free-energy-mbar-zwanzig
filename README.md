@@ -2,7 +2,7 @@
 
 [![Tests](https://github.com/annemcq/free-energy-mbar-zwanzig/actions/workflows/tests.yml/badge.svg)](https://github.com/annemcq/free-energy-mbar-zwanzig/actions/workflows/tests.yml)
 
-The current work carries out free energy estimation using biased/multistate simulation data, via single-step Zwanzig perturbation and Multistate Bennett Acceptance Ratio (MBAR). This methodology is first validated against an analytical solution and subsequently applied to real public umbrella-sampling data. In practice, it applies the free-energy-estimation methodology used in molecular simulation research (MBAR, Zwanzig reweighting, bootstrap error estimation) to public benchmark systems, independent of any specific research project's data.
+This project compares single-step Zwanzig free-energy perturbation with Multistate Bennett Acceptance Ratio (MBAR). It first validates MBAR against an analytical harmonic-oscillator system, then applies both estimators to public umbrella-sampling data for a lysozyme chi torsion.
 
 ## Structure
 
@@ -51,7 +51,7 @@ Before comparing free-energy estimates, the analysis now checks the statistical 
 
 ![MBAR state-overlap matrix](results/figures/mbar_state_overlap.png)
 
-The overlap analysis shows heterogeneous sampling connectivity: adjacent-window overlap ranges from 0.050 to 0.428 (median 0.150), with the weakest connection between the −150° and −135° windows. This provides a useful diagnostic when interpreting the uncertainty of the chained Zwanzig estimator.
+The overlap analysis shows heterogeneous sampling connectivity: adjacent-window overlap ranges from 0.050 to 0.428 (median 0.150), with the weakest connection between the −150° and −135° windows. PyMBAR documents the overlap matrix as a diagnostic of how samples from one state contribute to other states, but does not prescribe a universal adjacent-overlap cutoff. I therefore use the observed weak link to flag where the chained Zwanzig estimate is most vulnerable rather than treating 0.050 as a formal pass/fail threshold.
 
 ## Part 2 — Real umbrella-sampling PMF: MBAR vs. Zwanzig
 
@@ -62,7 +62,7 @@ The real-data example uses the chi torsion of a valine sidechain in T4 lysozyme 
 1. Loads the 26-window umbrella-sampling dataset (`src/umbrella_data.py`)
 2. Subsamples each window for statistical independence (`pymbar.timeseries`)
 3. Computes the 1D PMF with MBAR
-4. Computes relative window free energies with a chained single-step Zwanzig estimator and compares them with MBAR
+4. Computes the relative free energy of each umbrella window with MBAR and a chained single-step Zwanzig estimator, then compares those window free energies
 5. Estimates uncertainty in the Zwanzig chain by bootstrap resampling
 6. Cross-checks MBAR's analytical uncertainty against a 100-replicate bootstrap
 7. Quantifies agreement and uncertainty differences between the MBAR and Zwanzig profiles
@@ -72,6 +72,11 @@ The real-data example uses the chi torsion of a valine sidechain in T4 lysozyme 
 *MBAR reconstruction of the one-dimensional free-energy profile along the chi torsion.*
 
 ![MBAR vs. chained Zwanzig](results/figures/mbar_vs_zwanzig_chain.png)
+
+### What is being compared?
+
+The PMF is reported as a free-energy profile over **36 bins of the chi torsion**, while the MBAR-vs-Zwanzig estimator comparison is a comparison of the **26 umbrella-window free energies**. The chained Zwanzig calculation proceeds in one direction: for each adjacent pair, samples from window $k$ are used to estimate $f_{k+1}-f_k$, and those pairwise estimates are accumulated from the reference window.
+
 ### Quantitative comparison
 
 The two estimators recover broadly similar free-energy profiles, but their uncertainty behaves very differently. MBAR's analytical standard errors agree closely with an independent bootstrap check (median bootstrap/analytical SE ratio = **1.017**, range **0.87–1.07**). Across the reaction coordinate, the chained Zwanzig profile differs from MBAR by an RMSE of **1.477 kBT**, with a maximum absolute difference of **2.973 kBT**. The median Zwanzig bootstrap standard error is **1.549 kBT**, compared with **0.366 kBT** for MBAR — approximately **4.23× larger** for the chained estimator.
