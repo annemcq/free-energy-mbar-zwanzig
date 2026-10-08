@@ -51,7 +51,7 @@ Before comparing free-energy estimates, the analysis now checks the statistical 
 
 ![MBAR state-overlap matrix](results/figures/mbar_state_overlap.png)
 
-The overlap analysis also provides context for the chained Zwanzig calculation: weak overlap between adjacent windows is a regime where single-step perturbation estimates become more sensitive to sampling noise, and uncertainty can accumulate along the chain.
+The overlap analysis shows heterogeneous sampling connectivity: adjacent-window overlap ranges from 0.050 to 0.428 (median 0.150), with the weakest connection between the −150° and −135° windows. This provides a useful diagnostic when interpreting the uncertainty of the chained Zwanzig estimator.
 
 ## Part 2 — Real umbrella-sampling PMF: MBAR vs. Zwanzig
 
@@ -64,12 +64,20 @@ The real-data example uses the chi torsion of a valine sidechain in T4 lysozyme 
 3. Computes the 1D PMF with MBAR
 4. Computes relative window free energies with a chained single-step Zwanzig estimator and compares them with MBAR
 5. Estimates uncertainty in the Zwanzig chain by bootstrap resampling
+6. Cross-checks MBAR's analytical uncertainty against a 100-replicate bootstrap
+7. Quantifies agreement and uncertainty differences between the MBAR and Zwanzig profiles
 
 ![1D PMF of the lysozyme chi torsion](results/figures/lysozyme_chi_pmf_mbar.png)
 
 *MBAR reconstruction of the one-dimensional free-energy profile along the chi torsion.*
 
 ![MBAR vs. chained Zwanzig](results/figures/mbar_vs_zwanzig_chain.png)
+### Quantitative comparison
+
+The two estimators recover broadly similar free-energy profiles, but their uncertainty behaves very differently. MBAR's analytical standard errors agree closely with an independent bootstrap check (median bootstrap/analytical SE ratio = **1.017**, range **0.87–1.07**). Across the reaction coordinate, the chained Zwanzig profile differs from MBAR by an RMSE of **1.477 kBT**, with a maximum absolute difference of **2.973 kBT**. The median Zwanzig bootstrap standard error is **1.549 kBT**, compared with **0.366 kBT** for MBAR — approximately **4.23× larger** for the chained estimator.
+
+This comparison illustrates the practical trade-off between the two approaches: Zwanzig can reproduce the overall profile but accumulates uncertainty as successive perturbation steps are chained, whereas MBAR uses information from all sampled states simultaneously.
+
 
 *MBAR and the chained Zwanzig estimates agree closely over much of the umbrella-sampling range, particularly near the reference window. The bootstrap uncertainty of the Zwanzig chain increases as pairwise steps are accumulated, and differences of a few $k_BT$ appear for some later windows. MBAR retains smaller uncertainties by combining information from all sampled states in a single multistate estimate.*
 
